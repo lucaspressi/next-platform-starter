@@ -1,36 +1,172 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+    body {
+        @apply bg-base-200 text-base-content;
+    }
+
     :not(pre) > code {
-        @apply px-1 py-0.5 font-mono rounded bg-neutral-900 text-yellow-200;
+        @apply px-1.5 py-0.5 font-mono rounded bg-pink-100 text-pink-800;
         font-size: 0.9em;
     }
 
     h1 {
         @apply mb-6 text-4xl font-bold tracking-tight md:text-5xl;
+        background: linear-gradient(135deg, #ff6b6b, #845ef7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+        @apply mb-4 text-2xl font-semibold md:text-3xl text-gray-800;
+    }
+
+    h3 {
+        @apply mb-3 text-xl font-semibold md:text-2xl text-gray-700;
     }
 }
 
-a {
-    @apply underline
+@layer components {
+    .link {
+        @apply text-pink-600 hover:text-purple-600 transition-colors duration-200 no-underline;
+    }
+
+    .card {
+        @apply bg-white shadow-md transition-all duration-300 hover:shadow-lg;
+    }
+
+    .btn {
+        @apply transition-all duration-200;
+    }
+
+    .btn-primary {
+        @apply shadow-md hover:shadow-lg hover:-translate-y-0.5 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white border-none;
+    }
+
+    .input, .textarea, .select {
+        @apply border-2 border-gray-200 focus:border-pink-400 focus:ring-pink-400 transition-colors duration-200;
+    }
 }
 
+/* Markdown Styles */
 .markdown {
-    @apply mb-1;
+    @apply space-y-4;
+}
+
+.markdown a {
+    @apply text-pink-600 hover:text-purple-600 transition-colors duration-200 no-underline;
+}
+
+.markdown p {
+    @apply leading-relaxed text-gray-700;
+}
+
+.markdown ul {
+    @apply list-disc list-inside space-y-2;
+}
+
+.markdown ol {
+    @apply list-decimal list-inside space-y-2;
+}
+
+.markdown blockquote {
+    @apply pl-4 border-l-4 border-pink-300 italic text-gray-600;
+}
+
+.markdown img {
+    @apply rounded-lg shadow-md my-4;
+}
+
+/* Alert Styles */
+.alert {
+    @apply rounded-lg border shadow-sm;
+}
+
+.alert-info {
+    @apply bg-blue-50 border-blue-300 text-blue-800;
+}
+
+.alert-success {
+    @apply bg-pink-50 border-pink-300 text-pink-800;
+}
+
+.alert-warning {
+    @apply bg-yellow-50 border-yellow-300 text-yellow-800;
+}
+
+.alert-error {
+    @apply bg-red-50 border-red-300 text-red-800;
 }
 
 .alert .markdown {
     @apply mb-0;
 }
 
-.markdown p {
-    @apply mb-3;
+/* Form Elements */
+.btn:disabled {
+    @apply bg-gray-300 text-gray-500 cursor-not-allowed transform-none shadow-none hover:shadow-none;
 }
 
-.btn:disabled {
-    @apply text-neutral-400 bg-neutral-700;
+/* Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-pink-300 rounded-full hover:bg-pink-400 transition-colors;
+}
+
+/* Selection */
+::selection {
+    @apply bg-pink-100 text-pink-800;
+}
+
+/* Header específico */
+.nav-link {
+    @apply text-gray-600 hover:text-pink-500 transition-colors duration-200;
+}
+
+/* Gradientes para elementos decorativos */
+.gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500;
+}
+
+.gradient-bg {
+    @apply bg-gradient-to-r from-pink-50 to-purple-50;
+}
+
+/* Cards e elementos interativos */
+.hover-card {
+    @apply transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+}
+
+/* Badges e tags */
+.badge {
+    @apply px-2 py-1 text-sm rounded-full;
+}
+
+.badge-primary {
+    @apply bg-pink-100 text-pink-800;
+}
+
+.badge-secondary {
+    @apply bg-purple-100 text-purple-800;
 }
