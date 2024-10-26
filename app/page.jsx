@@ -11,15 +11,15 @@ export default function Page() {
           <div className="animate-float">
             <Heart className="w-16 h-16 text-pink-500 mx-auto mb-6" />
           </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-800 mb-6">
-            Crie sua Página <span className="text-pink-500">Romântica</span>
+          <h1 className="text-4xl sm:text-5xl md:text-4xl font-bold text-gray-600 mb-6">
+            Crie seu Quiz de <span className="text-pink-400">Casal</span>
           </h1>
           <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             Celebre seu amor de uma maneira única! Crie uma página especial com suas fotos 
             favoritas e uma mensagem personalizada para surpreender seu amor.
           </p>
           <Link
-            href="/create-page"
+            href="/create-quiz"
             className="inline-flex items-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-full hover:from-pink-600 hover:to-purple-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             Comece Agora
@@ -79,7 +79,7 @@ export default function Page() {
             Comece agora e crie um momento inesquecível para vocês dois.
           </p>
           <Link
-            href="/create-page"
+            href="/create-quiz"
             className="inline-flex items-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-full hover:from-pink-600 hover:to-purple-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             Criar Minha Página
