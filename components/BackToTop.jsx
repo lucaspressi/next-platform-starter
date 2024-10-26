@@ -1,13 +1,17 @@
-// components/BackToTopButton.jsx
+// components/BackToTop.jsx
 'use client';
 import { useEffect, useState } from 'react';
 
-export function BackToTopButton() {
+export function BackToTop() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsVisible(window.scrollY > 300);
+      if (window.scrollY > 300) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -15,15 +19,18 @@ export function BackToTopButton() {
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   };
 
   return (
     <button
-      className={`fixed bottom-8 right-8 p-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg transition-all duration-300 hover:scale-110 ${
+      onClick={scrollToTop}
+      className={`fixed bottom-8 right-8 p-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg transition-all duration-300 hover:scale-110 z-50 ${
         isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
-      onClick={scrollToTop}
       aria-label="Voltar ao topo"
     >
       <svg

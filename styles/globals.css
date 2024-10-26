@@ -199,4 +199,15 @@
     @apply absolute inset-0 flex items-center justify-center text-pink-500 animate-spin;
 }
 
-/* Seus outros estilos permanecem... */
+@keyframes float-particle {
+    0%, 100% { 
+      transform: translate(0, 0) scale(1); 
+    }
+    50% { 
+      transform: translate(10px, -10px) scale(1.2); 
+    }
+  }
+  
+  .particle-container div {
+    animation: float-particle 3s ease-in-out infinite;
+  }
