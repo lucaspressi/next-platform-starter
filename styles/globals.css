@@ -211,3 +211,15 @@
   .particle-container div {
     animation: float-particle 3s ease-in-out infinite;
   }
+  
+  /* globals.css */
+html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Para suporte em Safari */
+  @supports (-webkit-hyphens:none) {
+    html {
+      scroll-behavior: auto;
+    }
+  }

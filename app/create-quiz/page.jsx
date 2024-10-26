@@ -165,13 +165,11 @@ export default function CreateQuizPage() {
   };
 
   const handleSubmit = async () => {
-    // Validar se tem pelo menos uma pergunta
     if (quizItems.length < 1) {
       alert('Adicione pelo menos uma pergunta!');
       return;
     }
 
-    // Validar se todos os campos estão preenchidos
     const hasEmptyFields = quizItems.some(item => {
       if (item.questionType === 'default') {
         alert('Por favor, selecione um tipo de pergunta para todas as questões.');
@@ -233,57 +231,61 @@ export default function CreateQuizPage() {
       setIsLoading(false);
     }
   };
-
   return (
-    <div className="min-h-screen bg-gradient-to-r from-pink-100 to-purple-100 p-8">
+    <div className="min-h-screen bg-gradient-to-r from-pink-100 to-purple-100 p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-3">
-            <Heart className="w-8 h-8 text-pink-500 animate-pulse" />
+        {/* Cabeçalho */}
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 flex items-center justify-center gap-2 sm:gap-3">
+            <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-pink-500 animate-pulse" />
             Crie seu Quiz de Casal
-            <Heart className="w-8 h-8 text-purple-500 animate-pulse" />
+            <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 animate-pulse" />
           </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base px-2 sm:px-4">
             Compartilhe seus momentos especiais através de um quiz personalizado. 
             Adicione fotos memoráveis e crie perguntas sobre sua história de amor.
           </p>
         </div>
 
-        <div className="mb-6 flex justify-end">
+        {/* Botão Adicionar */}
+        <div className="mb-4 sm:mb-6 flex justify-center sm:justify-end">
           <button
             onClick={addQuizItem}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105"
           >
             <PlusCircle size={20} />
-            Adicionar Nova Pergunta
+            <span className="text-sm sm:text-base">Adicionar Nova Pergunta</span>
           </button>
         </div>
 
+        {/* Lista de Perguntas */}
         {quizItems.map((item, index) => (
-          <div key={item.id} className="romantic-card mb-8">
-            <div className="bg-gradient-to-r from-pink-500 to-purple-500 px-6 py-3 flex justify-between items-center">
-              <h3 className="text-white font-semibold flex items-center gap-2">
-                <Heart className="w-5 h-5" fill="white" />
+          <div key={item.id} className="romantic-card mb-6 sm:mb-8">
+            {/* Cabeçalho da Pergunta */}
+            <div className="bg-gradient-to-r from-pink-500 to-purple-500 px-4 sm:px-6 py-2 sm:py-3 flex justify-between items-center rounded-t-lg">
+              <h3 className="text-white font-semibold flex items-center gap-2 text-sm sm:text-base">
+                <Heart className="w-4 h-4 sm:w-5 sm:h-5" fill="white" />
                 Pergunta {index + 1}
               </h3>
               <button
                 onClick={() => removeQuizItem(item.id)}
                 className="text-white hover:text-pink-200 transition-colors"
               >
-                <XCircle size={24} />
+                <XCircle size={20} className="sm:w-6 sm:h-6" />
               </button>
             </div>
 
-            <div className="p-6 space-y-6 bg-white/80 backdrop-blur-sm">
-              {/* Seleção do Tipo de Pergunta */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+            {/* Corpo da Pergunta */}
+            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 bg-white/80 backdrop-blur-sm rounded-b-lg">
+              {/* Select de Tipo de Pergunta */}
+              <div className="space-y-1 sm:space-y-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700">
                   Escolha o tipo de pergunta
                 </label>
                 <select
                   value={item.questionType}
                   onChange={(e) => handleQuestionTypeChange(item.id, e.target.value)}
-                  className="w-full p-3 border border-pink-200 rounded-lg focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all duration-300 bg-white"
+                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-pink-200 rounded-lg focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all duration-300 bg-white"
                 >
                   {PRESET_QUESTIONS.map((q) => (
                     <option key={q.value} value={q.value}>
@@ -293,41 +295,39 @@ export default function CreateQuizPage() {
                 </select>
               </div>
 
-              {/* Área de Upload de Imagem */}
-              <div className="romantic-border">
-                <div className="border-2 border-dashed border-pink-300 rounded-lg p-6 text-center transition-all duration-300 hover:border-pink-500">
-                  {item.imagePreview ? (
-                    <div className="relative group">
-                      <img
-                        src={item.imagePreview}
-                        alt="Preview"
-                        className="max-h-64 mx-auto rounded-lg shadow-md transition-transform duration-300 group-hover:scale-105"
-                      />
-                      <button
-                        onClick={() => updateQuizItem(item.id, 'image', null)}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      >
-                        <XCircle size={20} />
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="cursor-pointer block group">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageUpload(item.id, e)}
-                        className="hidden"
-                      />
-                      <div className="flex flex-col items-center gap-3 text-gray-500 group-hover:text-pink-500 transition-colors duration-300">
-                        <div className="w-16 h-16 rounded-full bg-pink-50 flex items-center justify-center group-hover:bg-pink-100 transition-colors duration-300">
-                          <ImageIcon size={32} className="transform group-hover:scale-110 transition-transform duration-300" />
-                        </div>
-                        <span className="text-sm font-medium">Clique para adicionar uma foto especial</span>
-                        <span className="text-xs text-gray-400">Escolha uma imagem que represente este momento</span>
+              {/* Área de Upload */}
+              <div className="border-2 border-dashed border-pink-300 rounded-lg p-4 sm:p-6 text-center transition-all duration-300 hover:border-pink-500">
+                {item.imagePreview ? (
+                  <div className="relative group">
+                    <img
+                      src={item.imagePreview}
+                      alt="Preview"
+                      className="max-h-48 sm:max-h-64 mx-auto rounded-lg shadow-md transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <button
+                      onClick={() => updateQuizItem(item.id, 'image', null)}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    >
+                      <XCircle size={16} className="sm:w-5 sm:h-5" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="cursor-pointer block group">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(item.id, e)}
+                      className="hidden"
+                    />
+                    <div className="flex flex-col items-center gap-2 sm:gap-3 text-gray-500 group-hover:text-pink-500 transition-colors duration-300">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-pink-50 flex items-center justify-center group-hover:bg-pink-100 transition-colors duration-300">
+                        <ImageIcon size={24} className="sm:w-8 sm:h-8 transform group-hover:scale-110 transition-transform duration-300" />
                       </div>
-                    </label>
-                  )}
-                </div>
+                      <span className="text-xs sm:text-sm font-medium">Clique para adicionar uma foto especial</span>
+                      <span className="text-xs text-gray-400 hidden sm:block">Escolha uma imagem que represente este momento</span>
+                    </div>
+                  </label>
+                )}
               </div>
 
               {/* Campo de Pergunta Personalizada */}
@@ -337,27 +337,27 @@ export default function CreateQuizPage() {
                   value={item.question}
                   onChange={(e) => updateQuizItem(item.id, 'question', e.target.value)}
                   placeholder="Digite sua pergunta personalizada..."
-                  className="w-full p-3 border border-pink-200 rounded-lg focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all duration-300"
+                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-pink-200 rounded-lg focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all duration-300"
                 />
               )}
 
               {/* Alternativas */}
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {item.options.map((option, optIndex) => (
-                  <div key={optIndex} className="flex items-center gap-4">
+                  <div key={optIndex} className="flex items-center gap-2 sm:gap-4">
                     <input
                       type="radio"
                       name={`correct-${item.id}`}
                       checked={item.correctOption === optIndex}
                       onChange={() => updateQuizItem(item.id, 'correctOption', optIndex)}
-                      className="w-5 h-5 text-pink-500 border-2 border-pink-300 focus:ring-pink-500"
+                      className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500 border-2 border-pink-300 focus:ring-pink-500"
                     />
                     <input
                       type="text"
                       value={option}
                       onChange={(e) => updateQuizItem(item.id, 'options', e.target.value, optIndex)}
                       placeholder={`Alternativa ${optIndex + 1}`}
-                      className="flex-1 p-3 border border-pink-200 rounded-lg focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all duration-300"
+                      className="flex-1 p-2 sm:p-3 text-sm sm:text-base border border-pink-200 rounded-lg focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all duration-300"
                     />
                   </div>
                 ))}
@@ -366,22 +366,23 @@ export default function CreateQuizPage() {
           </div>
         ))}
 
+        {/* Botão Finalizar */}
         {quizItems.length > 0 && (
-          <div className="text-center mt-8 pb-8">
+          <div className="text-center mt-6 sm:mt-8 pb-6 sm:pb-8">
             <button
               onClick={handleSubmit}
               disabled={isLoading}
-              className="group relative overflow-hidden px-8 py-4 rounded-full font-semibold text-white bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-white bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
-                  <span>Criando Quiz...</span>
+                <div className="flex items-center justify-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent" />
+                  <span className="text-sm sm:text-base">Criando Quiz...</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <Save size={20} />
-                  <span>Finalizar e Criar Quiz</span>
+                <div className="flex items-center justify-center gap-2">
+                  <Save size={16} className="sm:w-5 sm:h-5" />
+                  <span className="text-sm sm:text-base">Finalizar e Criar Quiz</span>
                 </div>
               )}
             </button>
