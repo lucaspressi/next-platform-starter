@@ -1,11 +1,12 @@
+// app/api/quiz/route.js
+
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();
 
-// Criar quiz
 export async function POST(request) {
   try {
     const session = await getServerSession(authOptions);
@@ -37,15 +38,11 @@ export async function POST(request) {
     return NextResponse.json(quiz);
   } catch (error) {
     console.error('Erro ao criar quiz:', error);
-    return NextResponse.json(
-      { error: 'Erro ao criar quiz' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Erro ao criar quiz' }, { status: 500 });
   }
 }
 
-// Obter todos os quizzes
-export async function GET() {
+export async function GET(request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {

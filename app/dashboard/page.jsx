@@ -29,29 +29,31 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function fetchQuizzes() {
-      if (session?.user?.id) {
-        try {
-          setIsLoading(true);
-          setError(null);
-          
-          const response = await fetch(`/api/quiz/user/${session.user.id}`);
-          
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || 'Falha ao carregar os quizzes');
+        if (session?.user?.id) {
+          try {
+            setIsLoading(true);
+            setError(null);
+            
+            const response = await fetch(`/api/quiz/user/${session.user.id}`, {
+              headers: {
+                'Authorization': `Bearer ${session?.accessToken}` // Se você estiver usando tokens
+              }
+            });
+            
+            if (!response.ok) {
+              throw new Error('Falha ao carregar os quizzes');
+            }
+            
+            const data = await response.json();
+            setQuizzes(Array.isArray(data) ? data : []);
+          } catch (err) {
+            console.error('Erro ao carregar quizzes:', err);
+            setError('Erro ao carregar os quizzes. Por favor, tente novamente.');
+          } finally {
+            setIsLoading(false);
           }
-          
-          const data = await response.json();
-          setQuizzes(Array.isArray(data) ? data : []);
-          
-        } catch (err) {
-          console.error('Erro ao carregar quizzes:', err);
-          setError(err.message || 'Erro ao carregar os quizzes');
-        } finally {
-          setIsLoading(false);
         }
       }
-    }
 
     if (session?.user?.id) {
       fetchQuizzes();
