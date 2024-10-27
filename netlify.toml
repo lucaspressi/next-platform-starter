@@ -2,19 +2,31 @@
   command = "npm run build"
   publish = ".next"
 
+[functions]
+  node_bundler = "esbuild"
+  included_files = [
+    "node_modules/.prisma/client/**",
+    "node_modules/@prisma/client/**",
+    "prisma/schema.prisma"
+  ]
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[[plugins]]
+  package = "netlify-plugin-prisma-provider"
+  [plugins.inputs]
+    path = "prisma/schema.prisma"      # caminho do schema.prisma
+    varName = "DATABASE_URL"      # nome da variável de ambiente para o provider
 
 [build.environment]
   NEXT_TELEMETRY_DISABLED = "1"
   NODE_VERSION = "20.13.1"
-
-[functions]
-  node_bundler = "esbuild"
+  DATABASE_PROVIDER = "postgresql"    # define o provider como PostgreSQL para produção
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
+  from = "/api/quiz/*"
+  to = "/.netlify/functions/quiz/:splat"
   status = 200
 
 [dev]

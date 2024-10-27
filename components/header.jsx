@@ -1,10 +1,9 @@
-// components/header.jsx
 'use client';
 import Link from 'next/link';
-import { Heart, Menu, X } from 'lucide-react';
+import { Heart, Menu, X, User, LogOut } from 'lucide-react';
 import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 
-// Posições fixas para as partículas
 const PARTICLE_POSITIONS = [
   { left: '20%', top: '20%', delay: '0s' },
   { left: '50%', top: '30%', delay: '0.5s' },
@@ -13,13 +12,13 @@ const PARTICLE_POSITIONS = [
 
 const navItems = [
   { linkText: 'Home', href: '/' },
-  { linkText: 'Criar Quiz', href: '/create-quiz' },
   { linkText: 'Galeria', href: '/gallery' },
   { linkText: 'Como Funciona', href: '/#como-funciona' },
 ];
 
 export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { data: session, status } = useSession();
   
     const handleNavClick = (e, href) => {
       if (href.startsWith('/#')) {
@@ -34,6 +33,11 @@ export function Header() {
           setIsMenuOpen(false);
         }
       }
+    };
+
+    const handleSignOut = () => {
+      signOut({ callbackUrl: '/' });
+      setIsMenuOpen(false);
     };
 
   return (
@@ -52,7 +56,6 @@ export function Header() {
 
             {/* Texto do Logo */}
             <div className="flex flex-col items-start relative">
-              {/* Partículas com posições fixas */}
               <div className="particle-container">
                 {PARTICLE_POSITIONS.map((pos, i) => (
                   <div
@@ -77,7 +80,6 @@ export function Header() {
                 Casal
               </span>
 
-              {/* Linha decorativa */}
               <div className="h-0.5 w-0 group-hover:w-full bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 transition-all duration-1000 mt-1" />
             </div>
           </Link>
@@ -87,20 +89,43 @@ export function Header() {
             <ul className="flex gap-6">
               {navItems.map((item, index) => (
                 <li key={index}>
-                <Link
-                href={item.href}
-                onClick={(e) => handleNavClick(e, item.href)}
-                className="text-gray-600 hover:text-pink-500 transition-colors duration-200"
-                >
-                {item.linkText}
-                </Link>
+                  <Link
+                    href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    className="text-gray-600 hover:text-pink-500 transition-colors duration-200"
+                  >
+                    {item.linkText}
+                  </Link>
                 </li>
               ))}
             </ul>
 
-            <Link href="/create-quiz" className="btn btn-primary btn-sm">
-              Criar Quiz
-            </Link>
+            {status === 'loading' ? (
+              <div className="w-4 h-4 border-2 border-pink-200 border-t-pink-500 rounded-full animate-spin" />
+            ) : session ? (
+              <div className="flex items-center gap-4">
+                <Link href="/dashboard" className="flex items-center gap-2 text-gray-600 hover:text-pink-500 transition-colors">
+                  <User className="w-4 h-4" />
+                  <span className="hidden lg:inline">{session.user.email}</span>
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="btn btn-ghost btn-sm text-gray-600 hover:text-pink-500"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden lg:inline ml-1">Sair</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                <Link href="/login" className="text-gray-600 hover:text-pink-500 transition-colors">
+                  Login
+                </Link>
+                <Link href="/create-quiz" className="btn btn-primary btn-sm">
+                  Criar Quiz
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Botão do Menu Mobile */}
@@ -131,15 +156,52 @@ export function Header() {
                   </Link>
                 </li>
               ))}
-              <li className="pt-4">
-                <Link
-                  href="/create-quiz"
-                  className="btn btn-primary btn-sm w-full"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Criar Quiz
-                </Link>
-              </li>
+              {status === 'loading' ? (
+                <div className="w-4 h-4 border-2 border-pink-200 border-t-pink-500 rounded-full animate-spin mx-auto" />
+              ) : session ? (
+                <>
+                  <li>
+                    <Link
+                      href="/dashboard"
+                      className="block py-2 text-gray-600 hover:text-pink-500 transition-colors flex items-center gap-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <User className="w-4 h-4" />
+                      Meu Perfil
+                    </Link>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full text-left py-2 text-gray-600 hover:text-pink-500 transition-colors flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sair
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link
+                      href="/login"
+                      className="block py-2 text-gray-600 hover:text-pink-500 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                  </li>
+                  <li className="pt-2">
+                    <Link
+                      href="/create-quiz"
+                      className="btn btn-primary btn-sm w-full"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Criar Quiz
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         )}
