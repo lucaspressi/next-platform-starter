@@ -25,7 +25,6 @@ export default function CreateQuizPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Carregar estado do localStorage ao montar o componente
   useEffect(() => {
     const savedQuizTitle = localStorage.getItem('quizTitle');
     const savedQuizItems = localStorage.getItem('quizItems');
@@ -33,7 +32,6 @@ export default function CreateQuizPage() {
     if (savedQuizItems) setQuizItems(JSON.parse(savedQuizItems));
   }, []);
 
-  // Salvar estado no localStorage quando quizTitle ou quizItems mudarem
   useEffect(() => {
     localStorage.setItem('quizTitle', quizTitle);
     localStorage.setItem('quizItems', JSON.stringify(quizItems));
@@ -191,16 +189,6 @@ export default function CreateQuizPage() {
           </div>
         )}
 
-        <div className="flex justify-center mb-8">
-          <button
-            onClick={addQuizItem}
-            className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold rounded-xl shadow-lg hover:from-pink-600 hover:to-purple-600 transition-all duration-200 transform hover:scale-105"
-          >
-            <PlusCircle className="mr-2" />
-            Adicionar Nova Pergunta
-          </button>
-        </div>
-
         <div className="space-y-6">
           {quizItems.map((item, index) => (
             <div key={item.id} className="bg-white rounded-2xl shadow-lg p-6 transition-all hover:shadow-xl">
@@ -212,6 +200,16 @@ export default function CreateQuizPage() {
               />
             </div>
           ))}
+        </div>
+
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={addQuizItem}
+            className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold rounded-xl shadow-lg hover:from-pink-600 hover:to-purple-600 transition-all duration-200 transform hover:scale-105"
+          >
+            <PlusCircle className="mr-2" />
+            Adicionar Nova Pergunta
+          </button>
         </div>
 
         <div className="flex justify-center mt-8">
