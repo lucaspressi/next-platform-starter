@@ -1,12 +1,10 @@
-//app/create-quiz/page.jsx
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlusCircle, Save, Heart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import QuizItem from './components/QuizItem';
 import QuizTitleInput from './components/QuizTitleInput';
-import { AuthModal } from './components/AuthModal';
 import { PRESET_QUESTIONS } from './components/presetQuestions';
 
 export default function CreateQuizPage() {
@@ -26,7 +24,20 @@ export default function CreateQuizPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  // Carregar estado do localStorage ao montar o componente
+  useEffect(() => {
+    const savedQuizTitle = localStorage.getItem('quizTitle');
+    const savedQuizItems = localStorage.getItem('quizItems');
+    if (savedQuizTitle) setQuizTitle(savedQuizTitle);
+    if (savedQuizItems) setQuizItems(JSON.parse(savedQuizItems));
+  }, []);
+
+  // Salvar estado no localStorage quando quizTitle ou quizItems mudarem
+  useEffect(() => {
+    localStorage.setItem('quizTitle', quizTitle);
+    localStorage.setItem('quizItems', JSON.stringify(quizItems));
+  }, [quizTitle, quizItems]);
 
   const addQuizItem = () =>
     setQuizItems([
@@ -133,6 +144,8 @@ export default function CreateQuizPage() {
         throw new Error('Erro ao salvar o quiz');
       }
 
+      localStorage.removeItem('quizTitle');
+      localStorage.removeItem('quizItems');
       router.push(`/dashboard`);
     } catch (error) {
       console.error('Erro ao salvar quiz:', error);
@@ -150,7 +163,7 @@ export default function CreateQuizPage() {
     if (isSignedIn) {
       await saveQuiz();
     } else {
-      setShowAuthModal(true);
+      router.push('/sign-in');
     }
   };
 
@@ -211,13 +224,6 @@ export default function CreateQuizPage() {
             {isLoading ? 'Salvando...' : 'Finalizar e Criar Quiz'}
           </button>
         </div>
-
-        {showAuthModal && (
-          <AuthModal 
-            onClose={() => setShowAuthModal(false)}
-            onSuccess={saveQuiz}
-          />
-        )}
       </div>
     </div>
   );

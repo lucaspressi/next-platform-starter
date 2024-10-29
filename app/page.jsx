@@ -65,7 +65,7 @@ export default function Page() {
 
           </p>
           <Link
-            href="/create-quiz"
+            href="/sign-in"
             className="inline-flex items-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-full hover:from-pink-600 hover:to-purple-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             Comece Agora

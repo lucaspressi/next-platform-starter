@@ -119,10 +119,8 @@ export function Header() {
               </div>
             ) : (
               <div className="flex items-center gap-4">
-                <Link href="/sign-in" className="text-gray-600 hover:text-pink-500 transition-colors">
-                  Login
-                </Link>
-                <Link href="/create-quiz" className="btn btn-primary btn-sm">
+
+                <Link href="/sign-in" className="btn btn-primary btn-sm">
                   Criar Quiz
                 </Link>
               </div>
