@@ -12,7 +12,6 @@ const PARTICLE_POSITIONS = [
 
 const navItems = [
   { linkText: 'Home', href: '/' },
-  { linkText: 'Galeria', href: '/gallery' },
   { linkText: 'Como Funciona', href: '/#como-funciona' },
 ];
 
