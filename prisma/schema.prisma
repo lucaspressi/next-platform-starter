@@ -8,10 +8,9 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id // ID deve ser o mesmo do Clerk
   name      String?
   email     String   @unique
-  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   quizzes   Quiz[]
@@ -34,7 +33,7 @@ model Question {
   quiz          Quiz     @relation(fields: [quizId], references: [id])
   imageUrl      String
   question      String
-  options       String[]
+  options       String[] // Array de opções de resposta
   correctOption Int
   order         Int?
 }
@@ -42,7 +41,7 @@ model Question {
 model QuizResult {
   id          String   @id @default(cuid())
   quizId      String
-  answers     String   // JSON string
+  answers     String   // JSON string para armazenar respostas do usuário
   score       Int      @default(0)
   completedAt DateTime @default(now())
   quiz        Quiz     @relation(fields: [quizId], references: [id])

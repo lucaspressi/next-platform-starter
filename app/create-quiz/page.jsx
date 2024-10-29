@@ -1,8 +1,9 @@
+//app/create-quiz/page.jsx
 'use client';
 import React, { useState } from 'react';
 import { PlusCircle, Save, Heart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import QuizItem from './components/QuizItem';
 import QuizTitleInput from './components/QuizTitleInput';
 import { AuthModal } from './components/AuthModal';
@@ -10,7 +11,7 @@ import { PRESET_QUESTIONS } from './components/presetQuestions';
 
 export default function CreateQuizPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { user, isSignedIn } = useUser();
   const [quizTitle, setQuizTitle] = useState('Meu Quiz');
   const [quizItems, setQuizItems] = useState([
     {
@@ -19,7 +20,7 @@ export default function CreateQuizPage() {
       question: PRESET_QUESTIONS[0]?.question || '',
       options: ['', '', '', ''],
       image: null,
-      correctOption: 0 // adicionando campo de resposta correta
+      correctOption: 0,
     },
   ]);
 
@@ -36,7 +37,7 @@ export default function CreateQuizPage() {
         question: PRESET_QUESTIONS[0]?.question || '',
         options: ['', '', '', ''],
         image: null,
-        correctOption: 0 // inicializando resposta correta para nova pergunta
+        correctOption: 0,
       },
     ]);
 
@@ -95,7 +96,6 @@ export default function CreateQuizPage() {
         return false;
       }
   
-      // Adiciona validação para resposta correta
       if (item.correctOption === undefined) {
         setError(`Pergunta ${i + 1}: Selecione a resposta correta`);
         return false;
@@ -108,7 +108,6 @@ export default function CreateQuizPage() {
   const saveQuiz = async () => {
     try {
       setIsLoading(true);
-  
       const formattedQuestions = quizItems.map((item, index) => ({
         question: item.question,
         options: item.options,
@@ -117,14 +116,7 @@ export default function CreateQuizPage() {
         correctOption: item.correctOption || 0,
         order: index,
       }));
-  
-      // Removido correctOption do log pois ele está dentro de cada questão
-      console.log("Dados enviados:", {
-        title: quizTitle,
-        questions: formattedQuestions,
-        userId: session?.user?.id || null
-      });
-  
+
       const response = await fetch('/api/quiz', {
         method: 'POST',
         headers: {
@@ -133,15 +125,14 @@ export default function CreateQuizPage() {
         body: JSON.stringify({
           title: quizTitle,
           questions: formattedQuestions,
-          userId: session?.user?.id || null,
+          userId: user?.id || null,
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Erro ao salvar o quiz');
       }
-  
-      const data = await response.json();
+
       router.push(`/dashboard`);
     } catch (error) {
       console.error('Erro ao salvar quiz:', error);
@@ -156,49 +147,10 @@ export default function CreateQuizPage() {
       return;
     }
 
-    if (session) {
+    if (isSignedIn) {
       await saveQuiz();
     } else {
       setShowAuthModal(true);
-    }
-  };
-
-  const handleQuizSave = async (userId) => {
-    try {
-      setIsLoading(true);
-      const formattedQuestions = quizItems.map((item, index) => ({
-        question: item.question,
-        options: item.options,
-        questionType: item.questionType,
-        imageUrl: item.image || '',
-        correctOption: item.correctOption || 0,
-        order: index,
-      }));
-
-      const response = await fetch('/api/quiz', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: quizTitle,
-          questions: formattedQuestions,
-          userId: userId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao salvar o quiz');
-      }
-
-      const data = await response.json();
-      router.push(`/dashboard`);
-    } catch (error) {
-      console.error('Erro ao salvar quiz após login:', error);
-      setError('Ocorreu um erro ao salvar o quiz. Por favor, tente novamente.');
-    } finally {
-      setIsLoading(false);
-      setShowAuthModal(false);
     }
   };
 
@@ -263,8 +215,7 @@ export default function CreateQuizPage() {
         {showAuthModal && (
           <AuthModal 
             onClose={() => setShowAuthModal(false)}
-            onSuccess={handleQuizSave}
-            quizData={{ title: quizTitle, questions: quizItems }}
+            onSuccess={saveQuiz}
           />
         )}
       </div>

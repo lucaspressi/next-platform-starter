@@ -27,11 +27,8 @@ export default function TakeQuizPage() {
         const resultResponse = await fetch(`/api/quiz/${params.id}/results`);
         if (resultResponse.ok) {
           const resultData = await resultResponse.json();
-
-          // Log de depuração para entender a estrutura dos dados
           console.log('DEBUG - Dados do resultado:', resultData);
 
-          // Verifica se já foi respondido
           if (resultData && resultData.completed) {
             setHasCompleted(true);
             return;
@@ -108,9 +105,7 @@ export default function TakeQuizPage() {
 
       console.log('DEBUG - Payload:', {
         url: `/api/quiz/${params.id}/results`,
-        body: {
-          answers: userAnswers,
-        },
+        body: { answers: userAnswers },
       });
 
       const response = await fetch(`/api/quiz/${params.id}/results`, {
@@ -118,9 +113,7 @@ export default function TakeQuizPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          answers: userAnswers,
-        }),
+        body: JSON.stringify({ answers: userAnswers }),
       });
 
       if (!response.ok) {
@@ -141,7 +134,6 @@ export default function TakeQuizPage() {
     }
   };
 
-  // Exibir mensagem se o quiz já foi completado
   if (hasCompleted) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-pink-50">
@@ -184,7 +176,7 @@ export default function TakeQuizPage() {
           {error}
         </div>
         <button
-          onClick={() => setError(null)}
+          onClick={() => router.refresh()}
           className="px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg"
         >
           Tentar Novamente

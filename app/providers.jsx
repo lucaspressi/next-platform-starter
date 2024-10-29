@@ -1,6 +1,14 @@
+// providers.jsx
 'use client';
-import { SessionProvider } from 'next-auth/react';
+import { ClerkProvider, RedirectToSignIn, SignedIn, SignedOut } from '@clerk/nextjs';
 
 export function Providers({ children }) {
-  return <SessionProvider>{children}</SessionProvider>;
+  return (
+    <ClerkProvider>
+      {children} {/* Isso deve permitir que qualquer página não protegida funcione */}
+      <SignedOut>
+        <RedirectToSignIn /> {/* Isso ainda garantirá que as páginas protegidas redirecionem para login */}
+      </SignedOut>
+    </ClerkProvider>
+  );
 }

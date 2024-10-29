@@ -1,29 +1,26 @@
+//app/dashboard/layout.jsx
 'use client';
-import { useSession } from 'next-auth/react';
+import { useUser, SignOutButton } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Heart } from 'lucide-react';
 
 export default function DashboardLayout({ children }) {
-  const { data: session, status } = useSession();
+  const { isSignedIn, user } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!isSignedIn) {
       router.push('/login');
     }
-  }, [status, router]);
+  }, [isSignedIn, router]);
 
-  if (status === 'loading') {
+  if (isSignedIn === undefined) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
       </div>
     );
-  }
-
-  if (!session) {
-    return null;
   }
 
   return (
@@ -39,14 +36,13 @@ export default function DashboardLayout({ children }) {
             </div>
             <div className="flex items-center gap-4">
               <span className="text-gray-600">
-                {session.user.email}
+                {user?.emailAddresses[0]?.emailAddress}
               </span>
-              <button
-                onClick={() => router.push('/api/auth/signout')}
-                className="text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                Sair
-              </button>
+              <SignOutButton>
+                <button className="text-gray-600 hover:text-gray-800 transition-colors">
+                  Sair
+                </button>
+              </SignOutButton>
             </div>
           </div>
         </div>

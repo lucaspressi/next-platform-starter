@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Heart, Menu, X, User, LogOut } from 'lucide-react';
 import { useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useUser, useClerk } from '@clerk/nextjs';
 
 const PARTICLE_POSITIONS = [
   { left: '20%', top: '20%', delay: '0s' },
@@ -16,28 +16,29 @@ const navItems = [
 ];
 
 export function Header() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const { data: session, status } = useSession();
-  
-    const handleNavClick = (e, href) => {
-      if (href.startsWith('/#')) {
-        e.preventDefault();
-        const elementId = href.replace('/#', '');
-        const element = document.getElementById(elementId);
-        if (element) {
-          element.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-          });
-          setIsMenuOpen(false);
-        }
-      }
-    };
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
 
-    const handleSignOut = () => {
-      signOut({ callbackUrl: '/' });
-      setIsMenuOpen(false);
-    };
+  const handleNavClick = (e, href) => {
+    if (href.startsWith('/#')) {
+      e.preventDefault();
+      const elementId = href.replace('/#', '');
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+        setIsMenuOpen(false);
+      }
+    }
+  };
+
+  const handleSignOut = () => {
+    signOut();
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className="bg-base-100/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
@@ -99,13 +100,11 @@ export function Header() {
               ))}
             </ul>
 
-            {status === 'loading' ? (
-              <div className="w-4 h-4 border-2 border-pink-200 border-t-pink-500 rounded-full animate-spin" />
-            ) : session ? (
+            {isSignedIn ? (
               <div className="flex items-center gap-4">
                 <Link href="/dashboard" className="flex items-center gap-2 text-gray-600 hover:text-pink-500 transition-colors">
                   <User className="w-4 h-4" />
-                  <span className="hidden lg:inline">{session.user.email}</span>
+                  <span className="hidden lg:inline">{user.emailAddresses[0].emailAddress}</span>
                 </Link>
                 <button
                   onClick={handleSignOut}
@@ -155,9 +154,7 @@ export function Header() {
                   </Link>
                 </li>
               ))}
-              {status === 'loading' ? (
-                <div className="w-4 h-4 border-2 border-pink-200 border-t-pink-500 rounded-full animate-spin mx-auto" />
-              ) : session ? (
+              {isSignedIn ? (
                 <>
                   <li>
                     <Link

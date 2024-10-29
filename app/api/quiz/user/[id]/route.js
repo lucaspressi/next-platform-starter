@@ -1,8 +1,7 @@
 // app/api/quiz/user/[id]/route.js
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { currentUser } from '@clerk/nextjs/server';
 
 const prisma = new PrismaClient();
 
@@ -10,20 +9,18 @@ export async function GET(request, context) {
   try {
     const { id: userId } = context.params;
 
-    const session = await getServerSession(authOptions);
+    const user = await currentUser();
 
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
-    const sessionUserId = session.user.id;
+    const sessionUserId = user.id;
 
-    // Verifica se o usuário logado é o mesmo que o proprietário dos quizzes
     if (sessionUserId !== userId) {
       return NextResponse.json({ error: 'Não autorizado a ver este recurso' }, { status: 403 });
     }
 
-    // Obtém apenas os quizzes pertencentes ao usuário
     const quizzes = await prisma.quiz.findMany({
       where: { userId: sessionUserId },
       include: { questions: true },

@@ -1,12 +1,12 @@
+//app/dashboard/page.jsx
 'use client';
-
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { Heart, Plus, Copy, ChartBar, Trash2, Check, Loader } from 'lucide-react';
 
 export default function Dashboard() {
-  const { data: session, status } = useSession();
+  const { isSignedIn, user } = useUser();
   const router = useRouter();
   const [quizzes, setQuizzes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -14,19 +14,19 @@ export default function Dashboard() {
   const [copySuccess, setCopySuccess] = useState(null);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!isSignedIn) {
       router.push('/login');
     }
-  }, [status, router]);
+  }, [isSignedIn, router]);
 
   useEffect(() => {
     async function fetchQuizzes() {
-      if (session?.user?.id) {
+      if (user?.id) {
         try {
           setIsLoading(true);
           setError(null);
           
-          const response = await fetch(`/api/quiz/user/${session.user.id}`, {
+          const response = await fetch(`/api/quiz/user/${user.id}`, {
             method: 'GET',
           });
           
@@ -45,10 +45,10 @@ export default function Dashboard() {
       }
     }
 
-    if (session?.user?.id) {
+    if (user?.id) {
       fetchQuizzes();
     }
-  }, [session]);
+  }, [user]);
 
   const handleCopyLink = async (quizId) => {
     try {
@@ -82,33 +82,11 @@ export default function Dashboard() {
     }
   };
 
-  if (status === 'loading' || isLoading) {
+  if (!isSignedIn || isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-pink-50">
         <Loader className="w-16 h-16 text-pink-500 animate-spin mb-4" />
         <p className="text-gray-600">Carregando seus quizzes...</p>
-      </div>
-    );
-  }
-
-  if (!session?.user) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-pink-50">
-        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full mx-4 text-center">
-          <Heart className="w-16 h-16 mx-auto text-pink-500 mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-            Faça login para continuar
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Você precisa estar logado para ver seus quizzes.
-          </p>
-          <button
-            onClick={() => router.push('/login')}
-            className="w-full px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold rounded-xl shadow-lg hover:from-pink-600 hover:to-purple-600 transition-all"
-          >
-            Fazer Login
-          </button>
-        </div>
       </div>
     );
   }

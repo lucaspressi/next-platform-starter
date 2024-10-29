@@ -1,34 +1,55 @@
+// app/api/quiz/[id]/route.js
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { currentUser } from '@clerk/nextjs/server';
 
 const prisma = new PrismaClient();
 
-export async function GET(request, context) {
+export async function GET(request, { params }) {
+  const { id } = params; // Obtém o ID do quiz da URL
+
   try {
-    const { id: quizId } = await context.params; // Acessando `params` de forma assíncrona
-
-    const session = await getServerSession(authOptions);
-
-    if (!session) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-    }
-
-    const sessionUserId = session.user.id;
-
+    // Busca o quiz pelo ID no banco de dados
     const quiz = await prisma.quiz.findUnique({
-      where: { id: quizId },
+      where: { id },
       include: { questions: true },
     });
 
-    if (!quiz || quiz.userId !== sessionUserId) {
-      return NextResponse.json({ error: 'Não autorizado a ver este quiz' }, { status: 403 });
+    if (!quiz) {
+      return NextResponse.json({ error: "Quiz não encontrado" }, { status: 404 });
     }
 
     return NextResponse.json(quiz, { status: 200 });
   } catch (error) {
-    console.error('Erro ao buscar quiz:', error);
-    return NextResponse.json({ error: 'Erro ao buscar quiz' }, { status: 500 });
+    console.error("Erro ao buscar o quiz:", error);
+    return NextResponse.json({ error: "Erro ao buscar o quiz" }, { status: 500 });
+  }
+}
+
+export async function POST(request) {
+  const user = await currentUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Usuário não autenticado" }, { status: 401 });
+  }
+
+  const { title, questions } = await request.json();
+
+  try {
+    const quiz = await prisma.quiz.create({
+      data: {
+        title,
+        userId: user.id,
+        questions: {
+          create: questions.map((question) => ({
+            ...question,
+          })),
+        },
+      },
+    });
+    return NextResponse.json(quiz);
+  } catch (error) {
+    console.error("Erro ao criar o quiz:", error);
+    return NextResponse.json({ error: "Erro ao criar o quiz" }, { status: 500 });
   }
 }
