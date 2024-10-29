@@ -3,15 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { 
-  Heart, 
-  Plus, 
-  Copy, 
-  ChartBar, 
-  Trash2,
-  Check,
-  Loader 
-} from 'lucide-react';
+import { Heart, Plus, Copy, ChartBar, Trash2, Check, Loader } from 'lucide-react';
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -35,10 +27,7 @@ export default function Dashboard() {
           setError(null);
           
           const response = await fetch(`/api/quiz/user/${session.user.id}`, {
-            method: 'GET', // Especifica o método explicitamente
-            headers: {
-              'Authorization': `Bearer ${session?.accessToken}`
-            }
+            method: 'GET',
           });
           
           if (!response.ok) {

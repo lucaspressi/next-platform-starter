@@ -24,6 +24,8 @@ export default function ResultsPage() {
         const quizResponse = await fetch(`/api/quiz/${params.id}`);
         if (!quizResponse.ok) throw new Error('Erro ao carregar o quiz');
         const quizData = await quizResponse.json();
+        console.log("DEBUG - Dados do quiz carregado:", quizData);
+        
 
         // Depois, buscar o resultado mais recente
         const resultResponse = await fetch(`/api/quiz/${params.id}/results`);
@@ -80,7 +82,14 @@ export default function ResultsPage() {
     );
   }
 
-  const answers = JSON.parse(result.answers);
+  // Garante que result.answers é um array JSON válido antes de tentar parseá-lo
+  let answers;
+  try {
+    answers = result.answers ? JSON.parse(result.answers) : [];
+  } catch (e) {
+    console.error("Erro ao parsear answers:", e);
+    answers = [];
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-pink-50">
@@ -94,14 +103,14 @@ export default function ResultsPage() {
 
           <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
             <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 mb-2">
-              {result.score}%
+              {result.score || 0}%
             </div>
             <p className="text-gray-600">de respostas corretas</p>
           </div>
         </div>
 
         <div className="space-y-6">
-          {quiz.questions.map((question, index) => {
+          {quiz.questions?.map((question, index) => {
             const isCorrect = answers[index] === question.correctOption;
 
             return (
