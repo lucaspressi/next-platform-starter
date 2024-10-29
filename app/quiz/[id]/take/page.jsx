@@ -23,6 +23,13 @@ export default function TakeQuizPage() {
         setLoading(true);
         setError(null);
 
+        // Verificar se já existe um resultado para este quiz
+        const resultResponse = await fetch(`/api/quiz/${params.id}/results`);
+        if (resultResponse.ok) {
+          setHasCompleted(true);
+          return; // Se já houver resultado, interrompe a execução
+        }
+
         // Carrega o quiz sem exigir autenticação
         const quizResponse = await fetch(`/api/quiz/${params.id}`);
         if (!quizResponse.ok) {
