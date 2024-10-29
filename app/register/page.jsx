@@ -52,7 +52,7 @@ export default function RegisterPage() {
         throw new Error(data.error || 'Erro ao registrar usuário');
       }
 
-      router.push('/login');
+      router.push('/sign-in');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -153,7 +153,7 @@ export default function RegisterPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Já tem uma conta?{' '}
-            <Link href="/login" className="font-medium text-pink-600 hover:text-pink-500">
+            <Link href="/sign-in" className="font-medium text-pink-600 hover:text-pink-500">
               Entre aqui
             </Link>
           </p>

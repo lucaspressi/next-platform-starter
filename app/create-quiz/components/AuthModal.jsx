@@ -19,7 +19,7 @@ export function AuthModal({ onClose, onSuccess }) {
     setIsLoading(true);
 
     try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const endpoint = isLogin ? '/api/auth/sign-in' : '/api/auth/register';
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {

@@ -16,26 +16,14 @@ export default function TakeQuizPage() {
   const [hasCompleted, setHasCompleted] = useState(false);
 
   useEffect(() => {
-    const checkExistingResult = async () => {
+    const fetchQuizData = async () => {
       if (!params.id) return;
 
       try {
         setLoading(true);
         setError(null);
 
-        // Verificar se já existe um resultado
-        const resultResponse = await fetch(`/api/quiz/${params.id}/results`);
-        if (resultResponse.ok) {
-          const resultData = await resultResponse.json();
-          console.log('DEBUG - Dados do resultado:', resultData);
-
-          if (resultData && resultData.completed) {
-            setHasCompleted(true);
-            return;
-          }
-        }
-
-        // Carregar quiz
+        // Carrega o quiz sem exigir autenticação
         const quizResponse = await fetch(`/api/quiz/${params.id}`);
         if (!quizResponse.ok) {
           const errorData = await quizResponse.json().catch(() => ({}));
@@ -57,7 +45,7 @@ export default function TakeQuizPage() {
       }
     };
 
-    checkExistingResult();
+    fetchQuizData();
   }, [params.id]);
 
   const handleAnswerSelect = (optionIndex) => {

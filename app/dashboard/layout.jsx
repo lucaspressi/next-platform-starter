@@ -11,7 +11,7 @@ export default function DashboardLayout({ children }) {
 
   useEffect(() => {
     if (!isSignedIn) {
-      router.push('/login');
+      router.push('/sign-in');
     }
   }, [isSignedIn, router]);
 

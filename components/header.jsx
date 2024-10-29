@@ -36,8 +36,11 @@ export function Header() {
   };
 
   const handleSignOut = () => {
-    signOut();
+    signOut(); // Executa o logout
     setIsMenuOpen(false);
+  
+    // Redireciona o usuário para a página inicial ou página de login
+    router.push('/'); // Ou '/sign-in' para redirecionar à página de login
   };
 
   return (
@@ -116,7 +119,7 @@ export function Header() {
               </div>
             ) : (
               <div className="flex items-center gap-4">
-                <Link href="/login" className="text-gray-600 hover:text-pink-500 transition-colors">
+                <Link href="/sign-in" className="text-gray-600 hover:text-pink-500 transition-colors">
                   Login
                 </Link>
                 <Link href="/create-quiz" className="btn btn-primary btn-sm">
@@ -180,7 +183,7 @@ export function Header() {
                 <>
                   <li>
                     <Link
-                      href="/login"
+                      href="/sign-in"
                       className="block py-2 text-gray-600 hover:text-pink-500 transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >

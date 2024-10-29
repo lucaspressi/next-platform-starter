@@ -1,4 +1,3 @@
-//app/dashboard/page.jsx
 'use client';
 import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
@@ -14,8 +13,10 @@ export default function Dashboard() {
   const [copySuccess, setCopySuccess] = useState(null);
 
   useEffect(() => {
-    if (!isSignedIn) {
-      router.push('/login');
+    // Redireciona para o login caso o usuário não esteja autenticado
+    if (isSignedIn === false) {
+      console.log("Usuário não autenticado. Redirecionando para /sign-in");
+      router.push('/sign-in');
     }
   }, [isSignedIn, router]);
 
@@ -23,6 +24,7 @@ export default function Dashboard() {
     async function fetchQuizzes() {
       if (user?.id) {
         try {
+          console.log("Iniciando carregamento dos quizzes...");
           setIsLoading(true);
           setError(null);
           
@@ -30,25 +32,29 @@ export default function Dashboard() {
             method: 'GET',
           });
           
+          console.log("Resposta da API de quizzes:", response);
           if (!response.ok) {
-            throw new Error('Falha ao carregar os quizzes');
+            throw new Error(`Falha ao carregar os quizzes: ${response.status} - ${response.statusText}`);
           }
           
           const data = await response.json();
+          console.log("Dados recebidos dos quizzes:", data);
           setQuizzes(Array.isArray(data) ? data : []);
         } catch (err) {
           console.error('Erro ao carregar quizzes:', err);
           setError('Erro ao carregar os quizzes. Por favor, tente novamente.');
         } finally {
           setIsLoading(false);
+          console.log("Carregamento dos quizzes finalizado.");
         }
       }
     }
 
-    if (user?.id) {
+    // Chama a função apenas quando `user` está definido e `isSignedIn` é verdadeiro
+    if (isSignedIn && user?.id) {
       fetchQuizzes();
     }
-  }, [user]);
+  }, [isSignedIn, user?.id]);
 
   const handleCopyLink = async (quizId) => {
     try {
@@ -56,6 +62,7 @@ export default function Dashboard() {
       await navigator.clipboard.writeText(url);
       setCopySuccess(quizId);
       setTimeout(() => setCopySuccess(null), 2000);
+      console.log(`Link copiado para o quiz ${quizId}:`, url);
     } catch (err) {
       console.error('Erro ao copiar:', err);
     }
@@ -67,15 +74,17 @@ export default function Dashboard() {
     }
 
     try {
+      console.log(`Iniciando exclusão do quiz ${quizId}`);
       const response = await fetch(`/api/quiz/${quizId}`, {
         method: 'DELETE',
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao deletar quiz');
+        throw new Error(`Erro ao deletar quiz: ${response.status} - ${response.statusText}`);
       }
 
       setQuizzes(quizzes.filter(quiz => quiz.id !== quizId));
+      console.log(`Quiz ${quizId} excluído com sucesso`);
     } catch (err) {
       console.error('Erro ao deletar quiz:', err);
       alert('Erro ao deletar quiz. Por favor, tente novamente.');

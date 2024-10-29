@@ -20,30 +20,47 @@ export default function ResultsPage() {
         setLoading(true);
         setError(null);
 
+        console.log("DEBUG: Iniciando fetch do quiz e resultado...");
+
         // Primeiro, buscar o quiz
         const quizResponse = await fetch(`/api/quiz/${params.id}`);
-        if (!quizResponse.ok) throw new Error('Erro ao carregar o quiz');
+        console.log("DEBUG: Resposta do fetch do quiz:", quizResponse);
+        
+        if (!quizResponse.ok) {
+          console.error("DEBUG: Erro ao carregar o quiz");
+          throw new Error('Erro ao carregar o quiz');
+        }
+
         const quizData = await quizResponse.json();
         console.log("DEBUG - Dados do quiz carregado:", quizData);
-        
 
         // Depois, buscar o resultado mais recente
         const resultResponse = await fetch(`/api/quiz/${params.id}/results`);
-        if (!resultResponse.ok) throw new Error('Erro ao carregar o resultado');
-        const resultData = await resultResponse.json();
+        console.log("DEBUG: Resposta do fetch dos resultados:", resultResponse);
 
+        if (!resultResponse.ok) {
+          console.error("DEBUG: Erro ao carregar o resultado");
+          throw new Error('Erro ao carregar o resultado');
+        }
+
+        const resultData = await resultResponse.json();
         setQuiz(quizData);
         setResult(resultData);
+        console.log("DEBUG - Dados do resultado carregado:", resultData);
       } catch (err) {
         console.error('Erro:', err);
         setError('Erro ao carregar resultados. Por favor, tente novamente.');
       } finally {
         setLoading(false);
+        console.log("DEBUG: Finalizando carregamento de resultados.");
       }
     }
 
     if (params.id) {
+      console.log("DEBUG: ID do quiz encontrado:", params.id);
       fetchResults();
+    } else {
+      console.log("DEBUG: ID do quiz não encontrado em params.");
     }
   }, [params.id]);
 
@@ -86,6 +103,7 @@ export default function ResultsPage() {
   let answers;
   try {
     answers = result.answers ? JSON.parse(result.answers) : [];
+    console.log("DEBUG: Answers parsed com sucesso:", answers);
   } catch (e) {
     console.error("Erro ao parsear answers:", e);
     answers = [];
@@ -112,6 +130,7 @@ export default function ResultsPage() {
         <div className="space-y-6">
           {quiz.questions?.map((question, index) => {
             const isCorrect = answers[index] === question.correctOption;
+            console.log("DEBUG: Checando resposta correta para questão:", index, " - Resultado:", isCorrect);
 
             return (
               <div key={index} className="bg-white rounded-xl shadow-lg p-6 transition-all hover:shadow-xl">
