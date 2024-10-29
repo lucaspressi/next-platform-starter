@@ -11,24 +11,16 @@ exports.handler = async (event, context) => {
 
   try {
     if (event.httpMethod === 'POST') {
-      // Parse dos dados recebidos
       const { title, questions, userId } = JSON.parse(event.body);
-      
-      // Log para depuração
-      console.log("Dados recebidos:", { title, questions, userId });
 
-      // Verifica se questions é um array válido e possui pelo menos uma pergunta
       if (!Array.isArray(questions) || questions.length === 0) {
         throw new Error('Dados inválidos: "questions" deve ser um array de perguntas');
       }
 
-      // Criar o quiz com o título, as questões e o relacionamento com o usuário
       const quiz = await prisma.quiz.create({
         data: {
-          title: title || 'Quiz de Casal', // Título padrão caso não seja fornecido
-          user: {
-            connect: { id: userId }
-          },
+          title: title || 'Quiz de Casal',
+          user: { connect: { id: userId } },
           questions: {
             create: questions.map((question, index) => ({
               imageUrl: question.imageUrl || '',
@@ -39,27 +31,20 @@ exports.handler = async (event, context) => {
             }))
           }
         },
-        include: {
-          questions: true // Inclui as questões na resposta
-        }
+        include: { questions: true }
       });
 
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({
-          success: true,
-          quizId: quiz.id
-        })
+        body: JSON.stringify({ success: true, quizId: quiz.id })
       };
     }
 
     return {
       statusCode: 405,
       headers,
-      body: JSON.stringify({
-        error: 'Método não permitido'
-      })
+      body: JSON.stringify({ error: 'Método não permitido' })
     };
 
   } catch (error) {
