@@ -1,8 +1,8 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+// next.config.js
+
+module.exports = {
     env: {
-      NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    },
-  }
+      NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'https://localhost:3000'
+    }
+  };
   
-  module.exports = nextConfig

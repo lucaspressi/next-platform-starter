@@ -29,31 +29,32 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function fetchQuizzes() {
-        if (session?.user?.id) {
-          try {
-            setIsLoading(true);
-            setError(null);
-            
-            const response = await fetch(`/api/quiz/user/${session.user.id}`, {
-              headers: {
-                'Authorization': `Bearer ${session?.accessToken}` // Se você estiver usando tokens
-              }
-            });
-            
-            if (!response.ok) {
-              throw new Error('Falha ao carregar os quizzes');
+      if (session?.user?.id) {
+        try {
+          setIsLoading(true);
+          setError(null);
+          
+          const response = await fetch(`/api/quiz/user/${session.user.id}`, {
+            method: 'GET', // Especifica o método explicitamente
+            headers: {
+              'Authorization': `Bearer ${session?.accessToken}`
             }
-            
-            const data = await response.json();
-            setQuizzes(Array.isArray(data) ? data : []);
-          } catch (err) {
-            console.error('Erro ao carregar quizzes:', err);
-            setError('Erro ao carregar os quizzes. Por favor, tente novamente.');
-          } finally {
-            setIsLoading(false);
+          });
+          
+          if (!response.ok) {
+            throw new Error('Falha ao carregar os quizzes');
           }
+          
+          const data = await response.json();
+          setQuizzes(Array.isArray(data) ? data : []);
+        } catch (err) {
+          console.error('Erro ao carregar quizzes:', err);
+          setError('Erro ao carregar os quizzes. Por favor, tente novamente.');
+        } finally {
+          setIsLoading(false);
         }
       }
+    }
 
     if (session?.user?.id) {
       fetchQuizzes();
@@ -190,7 +191,6 @@ export default function Dashboard() {
                     Criado em {new Date(quiz.createdAt).toLocaleDateString('pt-BR')}
                   </p>
 
-                  {/* Link do Quiz */}
                   <div className="mb-4">
                     <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
                       <input
@@ -217,7 +217,6 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  {/* Ações */}
                   <div className="flex justify-between items-center pt-4 border-t">
                     <button
                       onClick={() => router.push(`/quiz/${quiz.id}/results`)}

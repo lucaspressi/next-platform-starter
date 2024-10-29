@@ -1,13 +1,12 @@
-// app/api/auth/[...nextauth]/route.js
-
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import { compare } from "bcryptjs";
 
-const prisma = new PrismaClient();
+const prisma = global.prisma || new PrismaClient();
+if (process.env.NODE_ENV !== "production") global.prisma = prisma;
 
-const handler = NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -39,6 +38,7 @@ const handler = NextAuth({
             return null;
           }
 
+          console.log('Usuário autenticado com sucesso:', user);
           return {
             id: user.id,
             email: user.email,
@@ -65,6 +65,7 @@ const handler = NextAuth({
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
+        console.log("Session User ID:", session.user.id); // Log para depuração
       }
       return session;
     }
@@ -74,6 +75,9 @@ const handler = NextAuth({
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 dias
   },
-});
+};
 
-export { handler as GET, handler as POST };
+// Exportando NextAuth como manipuladores GET e POST
+const handler = NextAuth(authOptions);
+export const GET = handler;
+export const POST = handler;
