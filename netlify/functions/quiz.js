@@ -39,6 +39,17 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({ success: true, quizId: quiz.id })
       };
+    } else if (event.httpMethod === 'GET') {
+      const quizzes = await prisma.quiz.findMany({
+        include: { questions: true },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify(quizzes)
+      };
     }
 
     return {
