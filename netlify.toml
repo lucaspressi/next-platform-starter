@@ -17,9 +17,10 @@
   DATABASE_PROVIDER = "postgresql"    # define o provider como PostgreSQL para produção
 
 [[redirects]]
-  from = "/api/quiz/*"
-  to = "/.netlify/functions/quiz/:splat"
-  status = 200
+from = "/api/quiz/*"
+to = "/.netlify/functions/quiz/:splat"
+status = 200
+
 
 
 [dev]
