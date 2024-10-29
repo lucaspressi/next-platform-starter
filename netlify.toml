@@ -16,13 +16,6 @@
   NODE_VERSION = "20.13.1"
   DATABASE_PROVIDER = "postgresql"    # define o provider como PostgreSQL para produção
 
-[[redirects]]
-from = "/api/quiz/*"
-to = "/.netlify/functions/quiz/:splat"
-status = 200
-
-
-
 [dev]
   command = "next dev"
   targetPort = 3000
