@@ -1,7 +1,6 @@
 import '../styles/globals.css';
 import { Inter } from 'next/font/google';
 import { Header } from '../components/header';
-import { Footer } from '../components/footer';
 import { BackToTop } from '../components/BackToTop';
 import { Suspense } from 'react';
 import { Providers } from './providers';
@@ -52,7 +51,6 @@ export default function RootLayout({ children }) {
                   {children}
                 </Suspense>
               </main>
-              <Footer />
               <BackToTop />
             </div>
           </Providers>
