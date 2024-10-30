@@ -1,135 +1,177 @@
 'use client';
 import Link from 'next/link';
-import { Heart, Menu, X, User, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { Heart, Menu, X, User, LogOut, Star, Gift, Sparkles } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useUser, useClerk } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
-const PARTICLE_POSITIONS = [
-  { left: '20%', top: '20%', delay: '0s' },
-  { left: '50%', top: '30%', delay: '0.5s' },
-  { left: '80%', top: '40%', delay: '1s' },
-];
+// Partículas otimizadas
+const PARTICLES = Array(8).fill().map((_, i) => ({
+  left: `${Math.random() * 100}%`,
+  top: `${Math.random() * 100}%`,
+  size: `${Math.random() * 3 + 2}px`,
+  delay: `${Math.random() * 2}s`,
+  duration: `${Math.random() * 2 + 2}s`
+}));
 
 const navItems = [
   { linkText: 'Home', href: '/' },
   { linkText: 'Como Funciona', href: '/#como-funciona' },
+  { linkText: 'Recursos', href: '/#recursos' },
+  { linkText: 'Depoimentos', href: '/#depoimentos' },
 ];
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { isSignedIn, user } = useUser();
   const { signOut } = useClerk();
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleNavClick = (e, href) => {
     if (href.startsWith('/#')) {
       e.preventDefault();
       const elementId = href.replace('/#', '');
-      const element = document.getElementById(elementId);
-      if (element) {
-        element.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-        setIsMenuOpen(false);
-      }
+      document.getElementById(elementId)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+      setIsMenuOpen(false);
     }
   };
 
-  const handleSignOut = () => {
-    signOut(); // Executa o logout
-    setIsMenuOpen(false);
-  
-    // Redireciona o usuário para a página inicial ou página de login
-    router.push('/'); // Ou '/sign-in' para redirecionar à página de login
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setIsMenuOpen(false);
+      router.push('/');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
   };
 
   return (
-    <header className="bg-base-100/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
-      <nav className="max-w-6xl mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="group relative flex items-center gap-3">
-            {/* Efeito de brilho */}
-            <div className="absolute -inset-4 bg-gradient-to-r from-pink-500/20 via-purple-300/20 to-pink-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse-slow"></div>
+    <header 
+      className={`fixed w-full top-0 z-50 transition-all duration-500 ${
+        isScrolled 
+          ? 'bg-white/80 backdrop-blur-md shadow-lg py-2' 
+          : 'bg-transparent py-4'
+      }`}
+    >
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo Redesenhado */}
+          <Link href="/" className="group relative flex items-center gap-2">
+            {/* Efeito de Brilho */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-pink-500/20 via-purple-300/20 to-pink-500/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-1000" />
+            
+            {/* Container do Logo */}
+            <div className="relative flex items-center">
+              {/* Coração Principal */}
+              <div className="relative">
+                <Heart 
+                  className="w-10 h-10 fill-pink-500 stroke-none transform transition-all duration-500 group-hover:scale-110" 
+                />
+                <Sparkles 
+                  className="absolute -top-1 -right-1 w-4 h-4 text-purple-400 opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse" 
+                />
+              </div>
+              
+              {/* Texto do Logo */}
+              <div className="ml-2">
+                <div className="flex items-baseline">
+                  <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">
+                    Quiz Casal
+                  </span>
+                </div>
+                
+                {/* Linha decorativa */}
+                <div className="h-0.5 w-0 group-hover:w-full bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 transition-all duration-700" />
+              </div>
 
-            {/* Corações */}
-            <div className="relative">
-              <Heart className="w-12 h-12 fill-pink-500 transform -rotate-6 transition-all duration-500 group-hover:rotate-0 group-hover:scale-110" />
-              <Heart className="w-8 h-8 fill-purple-500 absolute -right-1 -bottom-1 transform rotate-12 transition-all duration-500 group-hover:rotate-0" />
-            </div>
-
-            {/* Texto do Logo */}
-            <div className="flex flex-col items-start relative">
-              <div className="particle-container">
-                {PARTICLE_POSITIONS.map((pos, i) => (
+              {/* Partículas */}
+              <div className="absolute inset-0 pointer-events-none">
+                {PARTICLES.map((particle, i) => (
                   <div
                     key={i}
-                    className="absolute w-1 h-1 bg-pink-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    className="absolute rounded-full bg-pink-400/30 animate-float"
                     style={{
-                      left: pos.left,
-                      top: pos.top,
-                      animationDelay: pos.delay,
+                      left: particle.left,
+                      top: particle.top,
+                      width: particle.size,
+                      height: particle.size,
+                      animationDelay: particle.delay,
+                      animationDuration: particle.duration,
                     }}
                   />
                 ))}
               </div>
-
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold tracking-wide bg-gradient-to-r from-pink-500 via-pink-400 to-pink-500 bg-clip-text text-transparent">
-                  Quiz
-                </span>
-                <span className="text-xl font-medium text-gray-600">de</span>
-              </div>
-              <span className="text-4xl font-extrabold tracking-wider bg-gradient-to-r from-purple-600 via-purple-400 to-purple-600 bg-clip-text text-transparent">
-                Casal
-              </span>
-
-              <div className="h-0.5 w-0 group-hover:w-full bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 transition-all duration-1000 mt-1" />
             </div>
           </Link>
 
-          {/* Navegação Desktop */}
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <ul className="flex gap-6">
+            {/* Menu Items */}
+            <div className="flex gap-8">
               {navItems.map((item, index) => (
-                <li key={index}>
-                  <Link
-                    href={item.href}
-                    onClick={(e) => handleNavClick(e, item.href)}
-                    className="text-gray-600 hover:text-pink-500 transition-colors duration-200"
-                  >
-                    {item.linkText}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-
-            {isSignedIn ? (
-              <div className="flex items-center gap-4">
-                <Link href="/dashboard" className="flex items-center gap-2 text-gray-600 hover:text-pink-500 transition-colors">
-                  <User className="w-4 h-4" />
-                  <span className="hidden lg:inline">{user.emailAddresses[0].emailAddress}</span>
-                </Link>
-                <button
-                  onClick={handleSignOut}
-                  className="btn btn-ghost btn-sm text-gray-600 hover:text-pink-500"
+                <Link
+                  key={index}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className="relative group text-gray-600 hover:text-pink-500 transition-colors duration-300"
                 >
-                  <LogOut className="w-4 h-4" />
-                  <span className="hidden lg:inline ml-1">Sair</span>
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-4">
+                  <span className="relative">
+                    {item.linkText}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-pink-500 to-purple-500 group-hover:w-full transition-all duration-300" />
+                  </span>
+                </Link>
+              ))}
+            </div>
 
-                <Link href="/sign-in" className="btn btn-primary btn-sm">
+            {/* User Menu/Auth */}
+            <div className="flex items-center gap-4">
+              {isSignedIn ? (
+                <div className="flex items-center gap-6">
+                  <Link 
+                    href="/dashboard" 
+                    className="flex items-center gap-2 text-gray-600 hover:text-pink-500 transition-all duration-300"
+                  >
+                    <User className="w-4 h-4" />
+                    <span className="text-sm font-medium truncate max-w-[150px]">
+                      {user.emailAddresses[0].emailAddress}
+                    </span>
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-2 text-gray-600 hover:text-pink-500 transition-all duration-300"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span className="text-sm font-medium">Sair</span>
+                  </button>
+                </div>
+              ) : (
+                <Link 
+                  href="/sign-in"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-full hover:from-pink-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg font-medium text-sm"
+                >
+                  <Gift className="w-4 h-4" />
                   Criar Quiz
                 </Link>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* Botão do Menu Mobile */}
+          {/* Mobile Menu Button */}
           <button
-            className="md:hidden btn btn-ghost btn-circle"
+            className="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-gray-600 hover:text-pink-500 hover:bg-pink-50 transition-all duration-200"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (
@@ -140,66 +182,48 @@ export function Header() {
           </button>
         </div>
 
-        {/* Navegação Mobile */}
+        {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4">
-            <ul className="flex flex-col gap-2">
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-lg shadow-lg border-t border-gray-100">
+            <div className="px-4 pt-2 pb-3 space-y-1">
               {navItems.map((item, index) => (
-                <li key={index}>
-                  <Link
-                    href={item.href}
-                    className="block py-2 text-gray-600 hover:text-pink-500 transition-colors duration-200"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.linkText}
-                  </Link>
-                </li>
+                <Link
+                  key={index}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className="block px-3 py-2 text-gray-600 hover:text-pink-500 hover:bg-pink-50 rounded-lg transition-all duration-200"
+                >
+                  {item.linkText}
+                </Link>
               ))}
               {isSignedIn ? (
                 <>
-                  <li>
-                    <Link
-                      href="/dashboard"
-                      className="block py-2 text-gray-600 hover:text-pink-500 transition-colors flex items-center gap-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <User className="w-4 h-4" />
-                      Meu Perfil
-                    </Link>
-                  </li>
-                  <li>
-                    <button
-                      onClick={handleSignOut}
-                      className="w-full text-left py-2 text-gray-600 hover:text-pink-500 transition-colors flex items-center gap-2"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sair
-                    </button>
-                  </li>
+                  <div className="border-t border-gray-100 my-2" />
+                  <Link
+                    href="/dashboard"
+                    className="block px-3 py-2 text-gray-600 hover:text-pink-500 hover:bg-pink-50 rounded-lg transition-all duration-200"
+                  >
+                    <User className="w-4 h-4 inline mr-2" />
+                    Meu Perfil
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full text-left px-3 py-2 text-gray-600 hover:text-pink-500 hover:bg-pink-50 rounded-lg transition-all duration-200"
+                  >
+                    <LogOut className="w-4 h-4 inline mr-2" />
+                    Sair
+                  </button>
                 </>
               ) : (
-                <>
-                  <li>
-                    <Link
-                      href="/sign-in"
-                      className="block py-2 text-gray-600 hover:text-pink-500 transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Login
-                    </Link>
-                  </li>
-                  <li className="pt-2">
-                    <Link
-                      href="/create-quiz"
-                      className="btn btn-primary btn-sm w-full"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Criar Quiz
-                    </Link>
-                  </li>
-                </>
+                <Link
+                  href="/sign-in"
+                  className="block px-3 py-2 text-center text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg hover:from-pink-600 hover:to-purple-600 transition-all duration-200 mt-2"
+                >
+                  <Gift className="w-4 h-4 inline mr-2" />
+                  Criar Quiz
+                </Link>
               )}
-            </ul>
+            </div>
           </div>
         )}
       </nav>
