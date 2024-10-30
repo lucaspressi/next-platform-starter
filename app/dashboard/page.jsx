@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { Heart, Plus, Copy, ChartBar, Trash2, Check, Loader } from 'lucide-react';
+import { Heart, Plus, Copy, ChartBar, Trash2, Check, Loader, QrCode, X, Download } from 'lucide-react';
 
 export default function Dashboard() {
   const { isSignedIn, user } = useUser();
@@ -11,9 +11,10 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copySuccess, setCopySuccess] = useState(null);
+  const [showQRCode, setShowQRCode] = useState(false);
+  const [currentQRUrl, setCurrentQRUrl] = useState('');
 
   useEffect(() => {
-    // Redireciona para o login caso o usuário não esteja autenticado
     if (isSignedIn === false) {
       console.log("Usuário não autenticado. Redirecionando para /sign-in");
       router.push('/sign-in');
@@ -50,7 +51,6 @@ export default function Dashboard() {
       }
     }
 
-    // Chama a função apenas quando `user` está definido e `isSignedIn` é verdadeiro
     if (isSignedIn && user?.id) {
       fetchQuizzes();
     }
@@ -65,6 +65,31 @@ export default function Dashboard() {
       console.log(`Link copiado para o quiz ${quizId}:`, url);
     } catch (err) {
       console.error('Erro ao copiar:', err);
+    }
+  };
+
+  const handleShowQRCode = (quizId) => {
+    const url = `${window.location.origin}/quiz/${quizId}/take`;
+    setCurrentQRUrl(url);
+    setShowQRCode(true);
+  };
+
+  const handleDownloadQRCode = async () => {
+    try {
+      const response = await fetch(
+        `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentQRUrl)}`
+      );
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'qrcode-quiz.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erro ao baixar QR Code:', error);
     }
   };
 
@@ -89,6 +114,60 @@ export default function Dashboard() {
       console.error('Erro ao deletar quiz:', err);
       alert('Erro ao deletar quiz. Por favor, tente novamente.');
     }
+  };
+
+  const QRCodeModal = () => {
+    if (!showQRCode) return null;
+
+    return (
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        onClick={() => setShowQRCode(false)}
+      >
+        <div 
+          className="bg-white rounded-xl p-6 max-w-sm w-full mx-4 animate-fade-in"
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-gray-800">QR Code do Quiz</h3>
+            <button
+              onClick={() => setShowQRCode(false)}
+              className="text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded-lg transition-all"
+            >
+              <X size={20} />
+            </button>
+          </div>
+          
+          <div className="flex justify-center mb-4">
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentQRUrl)}`}
+              alt="QR Code"
+              className="w-48 h-48 border rounded-lg shadow-sm"
+            />
+          </div>
+          
+          <p className="text-sm text-gray-600 text-center mb-6">
+            Escaneie este QR Code para acessar o quiz
+          </p>
+          
+          <div className="flex gap-3">
+            <button
+              onClick={handleDownloadQRCode}
+              className="flex-1 py-2 bg-white border-2 border-purple-500 text-purple-500 font-semibold rounded-lg hover:bg-purple-50 transition-all flex items-center justify-center gap-2"
+            >
+              <Download size={18} />
+              Baixar
+            </button>
+            <button
+              onClick={() => setShowQRCode(false)}
+              className="flex-1 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold rounded-lg hover:from-pink-600 hover:to-purple-600 transition-all"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   if (!isSignedIn || isLoading) {
@@ -190,6 +269,13 @@ export default function Dashboard() {
                           <Copy size={16} />
                         )}
                       </button>
+                      <button
+                        onClick={() => handleShowQRCode(quiz.id)}
+                        className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-all"
+                        title="Gerar QR Code"
+                      >
+                        <QrCode size={16} />
+                      </button>
                     </div>
                   </div>
 
@@ -214,6 +300,7 @@ export default function Dashboard() {
             ))}
           </div>
         )}
+        <QRCodeModal />
       </div>
     </div>
   );

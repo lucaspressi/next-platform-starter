@@ -121,7 +121,7 @@ export default function CreateQuizPage() {
         question: item.question,
         options: item.options,
         questionType: item.questionType,
-        imageUrl: item.image || '',
+        imageUrl: item.imageUrl || '', 
         correctOption: item.correctOption || 0,
         order: index,
       }));

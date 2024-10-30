@@ -98,11 +98,6 @@ export default function TakeQuizPage() {
       setSubmitting(true);
       setError(null);
 
-      console.log('DEBUG - Payload:', {
-        url: `/api/quiz/${params.id}/results`,
-        body: { answers: userAnswers },
-      });
-
       const response = await fetch(`/api/quiz/${params.id}/results`, {
         method: 'POST',
         headers: {
@@ -117,7 +112,6 @@ export default function TakeQuizPage() {
       }
 
       const result = await response.json();
-      console.log('Resultado:', result);
 
       await new Promise((resolve) => setTimeout(resolve, 500));
       router.push(`/quiz/${params.id}/results`);
@@ -189,6 +183,13 @@ export default function TakeQuizPage() {
           <Heart className="text-pink-500 animate-pulse" size={32} /> Quiz de Casal <Heart className="text-purple-500 animate-pulse" size={32} />
         </h1>
         <div className="bg-white rounded-xl shadow-lg p-6">
+          {quiz?.questions?.[currentQuestion]?.imageUrl && (
+            <img
+              src={quiz.questions[currentQuestion].imageUrl}
+              alt="Imagem da pergunta"
+              className="w-full max-w-md mx-auto mb-4 rounded-lg shadow-md"
+            />
+          )}
           <h2 className="text-xl font-medium mb-4">
             {quiz?.questions?.[currentQuestion]?.question}
           </h2>
