@@ -112,7 +112,7 @@ export default function Page() {
               </div>
 
               <div className="animate-float">
-                <Heart className="w-16 h-16 text-pink-500 mx-auto mb-6" aria-hidden="true" />
+                <Heart className="w-16 h-16 text-pink-500 mx-auto mb-6" aria-hidden='true'/>
               </div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-800 mb-6">
@@ -166,21 +166,21 @@ export default function Page() {
 <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
            <FeatureCard
              icon={
-               <Camera className="w-8 h-8 text-pink-500 animate-bounce" aria-hidden="true" />
+               <Camera className="w-8 h-8 text-pink-500 animate-bounce" aria-hidden='true'/>
              }
              title="Suas Fotos Especiais"
              description="Faça upload das suas fotos favoritas juntos. Suportamos vários formatos de imagem para você escolher os melhores momentos."
            />
            <FeatureCard
              icon={
-               <MessageCircle className="w-8 h-8 text-purple-500" aria-hidden="true" />
+               <MessageCircle className="w-8 h-8 text-purple-500" aria-hidden='true'/>
              }
              title="Mensagem Personalizada"
              description="Escreva uma mensagem única e especial que será exibida junto com suas fotos, tornando o momento ainda mais memorável."
            />
            <FeatureCard
              icon={
-               <QrCode className="w-8 h-8 text-pink-500" aria-hidden="true" />
+               <QrCode className="w-8 h-8 text-pink-500" aria-hidden='true'/>
              }
              title="QR Code Exclusivo"
              description="Gere um QR Code para compartilhar sua página romântica de forma criativa e surpreendente com seu amor."
@@ -282,9 +282,11 @@ export default function Page() {
              data-ad-format="auto"
              data-full-width-responsive="true"
            />
-           <Script id="adsense-init">
-             (adsbygoogle = window.adsbygoogle || []).push({});
-           </Script>
+<Script id="adsense-init">
+  {`
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  `}
+</Script>
          </div>
 
          {/* Chamada para Ação Final */}
