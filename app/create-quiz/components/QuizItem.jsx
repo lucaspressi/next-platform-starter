@@ -75,6 +75,11 @@ export default function QuizItem({ index, item, setQuizItems, handleQuestionType
           />
         )}
 
+        {/* Pré-visualização de imagem centralizada acima das alternativas */}
+        <div className="flex justify-center mb-4">
+          <ImageUpload item={item} setQuizItems={setQuizItems} />
+        </div>
+
         <div className="space-y-2">
           <p className="text-sm text-gray-600 mb-2">Selecione a resposta correta:</p>
           {options.map((option, idx) => (
@@ -111,8 +116,6 @@ export default function QuizItem({ index, item, setQuizItems, handleQuestionType
             </div>
           ))}
         </div>
-
-        <ImageUpload item={item} setQuizItems={setQuizItems} />
       </div>
     </div>
   );
